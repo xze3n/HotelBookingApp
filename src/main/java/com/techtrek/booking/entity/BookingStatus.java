@@ -1,4 +1,4 @@
-package com.techtrek.booking.model;
+package com.techtrek.booking.entity;
 
 public enum BookingStatus {
     ACTIVE,
