@@ -1,6 +1,6 @@
 package com.techtrek.booking.entity;
 
 public enum Role {
-    CUSTOMEER,
+    CUSTOMER,
     ADMIN
 }
