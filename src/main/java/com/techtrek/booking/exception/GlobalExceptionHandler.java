@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
     // Fallback : any other unexpected exception
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(
-            Exception ex,
+            Exception ignored,
             WebRequest request
     ) {
         ErrorResponse error = new ErrorResponse(
