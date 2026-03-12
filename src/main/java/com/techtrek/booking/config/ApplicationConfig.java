@@ -1,5 +1,6 @@
 package com.techtrek.booking.config;
 
+import com.techtrek.booking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +31,7 @@ public class ApplicationConfig {
     // data access object responsible for fetching user details
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsPasswordService(userDetailsService());
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
