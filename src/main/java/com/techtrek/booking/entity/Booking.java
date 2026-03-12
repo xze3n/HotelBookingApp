@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="bookings")
+@Table(name="bookings",indexes = {@Index(name="idx_booking_room_dates",columnList="room_id,check_in_date,check_out_date")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,4 +38,9 @@ public class Booking {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist(){
+        this.createdAt = LocalDateTime.now();
+    }
 }
