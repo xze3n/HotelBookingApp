@@ -1,6 +1,7 @@
 package com.techtrek.booking.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -13,9 +14,16 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Booking {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "booking_sequence")
+    @SequenceGenerator(
+            name = "booking_sequence",
+            sequenceName = "booking_sequence",
+            allocationSize = 1
+    )
     private Long id;
 
     @ManyToOne
@@ -36,6 +44,12 @@ public class Booking {
     @Column(nullable = false)
     private BookingStatus status;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist(){
+        this.createdAt = LocalDateTime.now();
+    }
+
 }
