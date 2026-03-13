@@ -17,7 +17,7 @@ public class CreateRoomRequest {
     @NotBlank(message = "Room number is required.")
     private String roomNumber;
 
-    @NotBlank(message = "Room type is required.")
+    @NotNull(message = "Room type is required.")
     private RoomType type;
 
     @Positive(message = "Capacity must be greater than zero.")
