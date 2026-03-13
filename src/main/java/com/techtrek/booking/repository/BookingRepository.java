@@ -1,7 +1,24 @@
 package com.techtrek.booking.repository;
 
 import com.techtrek.booking.entity.Booking;
+import com.techtrek.booking.entity.Room;
+import com.techtrek.booking.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Repository
 public interface BookingRepository extends JpaRepository<Booking, Long>{
+    //Toate rezervarile unui user;
+    List<Booking> findByUser(User user);
+
+    //Toate rezervarile care se suprapun cu intervalul dat pentru o camera;
+    List<Booking> findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
+            Room room,
+            LocalDate checkIn,
+            LocalDate checkOut
+    );
 
 }
