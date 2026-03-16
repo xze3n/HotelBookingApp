@@ -11,6 +11,8 @@ import com.techtrek.booking.repository.BookingRepository;
 import com.techtrek.booking.repository.RoomRepository;
 import com.techtrek.booking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.List;
 @Service
@@ -19,6 +21,7 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
 
 
     @Override
@@ -64,6 +67,10 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
         //DE FACUT EXCEPTIE CUSTOM
+        if(!booking.getUser().getId().equals(CurrentUser().getId())){
+            throw new RuntimeException("You are now allowed to cancel this booking");
+
+        }
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
     }
@@ -99,6 +106,25 @@ public class BookingServiceImpl implements BookingService {
 
         Booking saved = bookingRepository.save(booking);
         return mapToResponse(saved);
+
+    }
+
+    @Override
+    public List<BookingResponse> getBookingsForCurrentUser(){
+        User currentUser = getCurrentUser();
+        List<Booking> bookings = bookingRepository.findByUser(currentUser);
+        return bookings.stream()
+                .map(this::mapToResponse)
+                .toList();
+
+    }
+    private User getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email;
+
+
+
+
 
     }
     private BookingResponse mapToResponse(Booking booking){

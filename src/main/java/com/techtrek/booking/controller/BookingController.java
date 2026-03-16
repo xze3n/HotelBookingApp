@@ -7,6 +7,7 @@ import com.techtrek.booking.service.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class BookingController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BookingResponse>> getAllBookings(){
         List<BookingResponse> bookings = bookingService.getAllBookings();
         return ResponseEntity.ok(bookings);
@@ -39,7 +41,7 @@ public class BookingController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping
+    @PutMapping{"/id"}
     public ResponseEntity<BookingResponse> updateBooking(
             @PathVariable Long id,
             @Valid @RequestBody BookingUpdateRequest request ){
@@ -48,4 +50,10 @@ public class BookingController {
 
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<List<BookingResponse>> getMyBookings(){
+        List<BookingResponse> myBookings = bookingService.getBookingsForCurrentUser(){
+            return ResponseEntity.ok(bookingService.getBookingsForCurrentUser());
+        }
+    }
 }

@@ -18,4 +18,6 @@ public interface BookingService {
 
     //UPDATEAZA O REZERVARE DUPA ID
     BookingResponse updateBooking(Long bookingId, BookingUpdateRequest request);
+
+    List<BookingResponse> getBookingsForCurrentUser();
 }
