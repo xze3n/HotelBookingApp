@@ -20,4 +20,7 @@ public interface BookingService {
     BookingResponse updateBooking(Long bookingId, BookingUpdateRequest request);
 
     List<BookingResponse> getBookingsForCurrentUser();
+
+    BookingResponse getBookingById(Long id);
+
 }

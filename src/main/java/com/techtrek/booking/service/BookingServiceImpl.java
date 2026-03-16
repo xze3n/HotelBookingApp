@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
@@ -39,6 +40,7 @@ public class BookingServiceImpl implements BookingService {
             if (overlappingBookings.isEmpty()) {
 
                 Booking booking = new Booking();
+                booking.setUser(getCurrentUser());
                 booking.setRoom(room);
                 booking.setCheckInDate(request.getCheckInDate());
                 booking.setCheckOutDate(request.getCheckOutDate());
@@ -67,10 +69,12 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
         //DE FACUT EXCEPTIE CUSTOM
-        if(!booking.getUser().getId().equals(CurrentUser().getId())){
-            throw new RuntimeException("You are now allowed to cancel this booking");
-
+        User currentUser = getCurrentUser();
+        if(!booking.getUser().getId().equals(currentUser.getId())){
+            throw new RuntimeException("You are not authorized to cancel this booking.");
         }
+
+
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
     }
@@ -81,6 +85,10 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
         //DE FACUT EXCEPTIE CUSTOM
+        User currentUser = getCurrentUser();
+        if(!booking.getUser().getId().equals(currentUser.getId())){
+            throw new RuntimeException("You are not authorized to update this booking.");
+        }
         List<Room> rooms = roomRepository.findByType(request.getRoomType());
         Room availableRoom = null;
 
@@ -118,15 +126,26 @@ public class BookingServiceImpl implements BookingService {
                 .toList();
 
     }
-    private User getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email;
 
-
-
-
-
+    @Override
+    public BookingResponse getBookingById(Long id){
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        return mapToResponse(booking);
     }
+    private User getCurrentUser() {
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String email;
+    if (principal instanceof UserDetails userDetails){
+        email = userDetails.getUsername();
+    } else{
+        email=principal.toString();
+    }
+    return userRepository.findByEmail(email)
+            .orElseThrow(()-> new RuntimeException("User not found"));
+    }
+
+
     private BookingResponse mapToResponse(Booking booking){
         return new BookingResponse(
                 booking.getId(),

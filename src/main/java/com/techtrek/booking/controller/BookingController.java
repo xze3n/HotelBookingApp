@@ -29,7 +29,6 @@ public class BookingController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BookingResponse>> getAllBookings(){
         List<BookingResponse> bookings = bookingService.getAllBookings();
         return ResponseEntity.ok(bookings);
@@ -41,7 +40,7 @@ public class BookingController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping{"/id"}
+    @PutMapping("/{id}")
     public ResponseEntity<BookingResponse> updateBooking(
             @PathVariable Long id,
             @Valid @RequestBody BookingUpdateRequest request ){
@@ -50,10 +49,17 @@ public class BookingController {
 
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<BookingResponse> getBookingById(@PathVariable Long id)
+    {
+        BookingResponse booking = bookingService.getBookingById(id);
+        return ResponseEntity.ok(booking);
+    }
     @GetMapping("/my")
     public ResponseEntity<List<BookingResponse>> getMyBookings(){
-        List<BookingResponse> myBookings = bookingService.getBookingsForCurrentUser(){
-            return ResponseEntity.ok(bookingService.getBookingsForCurrentUser());
+        List<BookingResponse> myBookings = bookingService.getBookingsForCurrentUser();
+            return ResponseEntity.ok(myBookings);
         }
-    }
+
+
 }
