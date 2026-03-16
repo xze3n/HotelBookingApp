@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -45,10 +46,18 @@ public class Booking {
     private BookingStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
+
+    @Column(nullable = false)
+    private BigDecimal totalPrice;
+
+
 
     @PrePersist
     public void prePersist(){
-        this.createdAt = LocalDateTime.now();
+
+        if (this.createdAt == null) {
+            this.createdAt = LocalDate.now();
+        }
     }
 }

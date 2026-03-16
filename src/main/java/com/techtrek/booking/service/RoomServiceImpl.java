@@ -3,7 +3,7 @@ package com.techtrek.booking.service;
 import com.techtrek.booking.dto.CreateRoomRequest;
 import com.techtrek.booking.dto.RoomResponse;
 import com.techtrek.booking.entity.Room;
-import com.techtrek.booking.exception.DuplicateRoomNumberException;
+import com.techtrek.booking.exception.room.DuplicateRoomNumberException;
 import com.techtrek.booking.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class RoomServiceImpl implements RoomService{
     @Override
     public RoomResponse createRoom(CreateRoomRequest request){
         if (roomRepository.existsByRoomNumber(request.getRoomNumber())){
-            throw new DuplicateRoomNumberException(request.getRoomNumber());
+            throw new DuplicateRoomNumberException("Room number " + request.getRoomNumber() + " already exists.");
         }
 
         Room room = new Room();
