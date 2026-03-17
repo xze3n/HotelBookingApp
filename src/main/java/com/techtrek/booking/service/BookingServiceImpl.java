@@ -7,6 +7,8 @@ import com.techtrek.booking.entity.Booking;
 import com.techtrek.booking.entity.BookingStatus;
 import com.techtrek.booking.entity.Room;
 import com.techtrek.booking.entity.User;
+import com.techtrek.booking.exception.booking.*;
+import com.techtrek.booking.exception.user.UserNotFoundException;
 import com.techtrek.booking.repository.BookingRepository;
 import com.techtrek.booking.repository.RoomRepository;
 import com.techtrek.booking.repository.UserRepository;
@@ -16,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
@@ -28,6 +31,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     //CREEARE BOOKING
     public BookingResponse createBooking(CreateBookingRequest request) {
+
+        if(!request.getCheckOutDate().isAfter(request.getCheckInDate())){
+            throw new InvalidDateRangeException("Check-out date must be after check-in date");
+        }
 
         List<Room> rooms = roomRepository.findByType(request.getRoomType());
 
@@ -50,8 +57,8 @@ public class BookingServiceImpl implements BookingService {
                 return mapToResponse(savedBooking);
             }
         }
-        throw new RuntimeException("There are no " + request.getRoomType()+ " rooms available for the selected dates.");
-    }   // DE FACUT EXCEPTIE CUSTOM "NoAvailableRoom"
+        throw new BookingConflictException("There are no " + request.getRoomType()+ " rooms available for the selected dates.");
+    }
 
     //RETURNEAZA TOATE REZERVARILE
     @Override
@@ -67,11 +74,15 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void cancelBooking(Long bookingId){
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
-        //DE FACUT EXCEPTIE CUSTOM
+                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + bookingId + "is not found."));
+
+        if (booking.getStatus() == BookingStatus.CANCELLED){
+            throw new BookingAlreadyCancelledException("Booking with id: " + bookingId + " is already cancelled.");
+        }
+
         User currentUser = getCurrentUser();
         if(!booking.getUser().getId().equals(currentUser.getId())){
-            throw new RuntimeException("You are not authorized to cancel this booking.");
+            throw new UnathorizedBookingAccesException("You are not authorized to cancel this booking.");
         }
 
 
@@ -83,11 +94,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponse updateBooking(Long bookingId, BookingUpdateRequest request){
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
-        //DE FACUT EXCEPTIE CUSTOM
+                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + bookingId + "is not found."));
+
         User currentUser = getCurrentUser();
         if(!booking.getUser().getId().equals(currentUser.getId())){
-            throw new RuntimeException("You are not authorized to update this booking.");
+            throw new UnathorizedBookingAccesException("You are not authorized to update this booking.");
         }
         List<Room> rooms = roomRepository.findByType(request.getRoomType());
         Room availableRoom = null;
@@ -106,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         if (availableRoom == null ) {
-            throw new RuntimeException("No available rooms of type " + request.getRoomType()+ " for the selected dates.");
+            throw new BookingConflictException("No available rooms of type " + request.getRoomType()+ " for the selected dates.");
         }
         booking.setRoom(availableRoom);
         booking.setCheckInDate(request.getCheckInDate());
@@ -130,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponse getBookingById(Long id){
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + id + "is not found."));
         return mapToResponse(booking);
     }
     private User getCurrentUser() {
@@ -142,7 +153,7 @@ public class BookingServiceImpl implements BookingService {
         email=principal.toString();
     }
     return userRepository.findByEmail(email)
-            .orElseThrow(()-> new RuntimeException("User not found"));
+            .orElseThrow(()-> new UserNotFoundException("User not found,"));
     }
 
 
