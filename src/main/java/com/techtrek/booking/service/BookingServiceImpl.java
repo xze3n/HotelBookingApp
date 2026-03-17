@@ -17,7 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +74,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void cancelBooking(Long bookingId){
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + bookingId + "is not found."));
+                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + bookingId + " is not found."));
 
         if (booking.getStatus() == BookingStatus.CANCELLED){
             throw new BookingAlreadyCancelledException("Booking with id: " + bookingId + " is already cancelled.");
@@ -94,8 +94,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponse updateBooking(Long bookingId, BookingUpdateRequest request){
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + bookingId + "is not found."));
+                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + bookingId + " is not found."));
 
+        if(!request.getCheckOutDate().isAfter(request.getCheckInDate())){
+            throw new InvalidDateRangeException("Check-out date must be after check-in date.");
+        }
         User currentUser = getCurrentUser();
         if(!booking.getUser().getId().equals(currentUser.getId())){
             throw new UnathorizedBookingAccesException("You are not authorized to update this booking.");
@@ -141,7 +144,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponse getBookingById(Long id){
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + id + "is not found."));
+                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + id + " is not found."));
         return mapToResponse(booking);
     }
     private User getCurrentUser() {
