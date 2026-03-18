@@ -14,12 +14,16 @@ Minimalistic Spring Boot backend for a hotel booking platform. Provides REST API
 * PostgreSQL
 * Git
 
+---
+
 ### Clone the repository
 
 ```bash
 git clone https://github.com/XZE3N/HotelBookingApp.git
 cd HotelBookingApp
 ```
+
+---
 
 ### Database
 
@@ -33,6 +37,21 @@ spring.datasource.password=your_db_password
 spring.jpa.hibernate.ddl-auto=create-drop
 ```
 
+---
+
+### JWT Configuration
+
+Add the following to `application.properties`:
+
+``` properties
+jwt.secret=your_base64_secret_key
+```
+The secret must be: 
+- Base64 encoded
+- At least 256 bits long
+
+---
+
 ### Run the application
 
 ```bash
@@ -40,6 +59,14 @@ mvn spring-boot:run
 ```
 
 The API will be available at: `http://localhost:8080`
+
+---
+
+## API Documentation (Swagger)
+
+Swagger UI:
+
+http://localhost:8080/swagger-ui.html
 
 ---
 
