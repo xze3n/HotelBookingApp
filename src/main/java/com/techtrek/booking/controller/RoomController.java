@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,5 +80,21 @@ public class RoomController {
         return ResponseEntity.noContent().build();
     }
 
+    // GET endpoint /rooms/search
+    @Operation(summary = "Search for available rooms based on filters", description = "Search available rooms by date range, filter by type and capacity")
+    @ApiResponse(responseCode = "200", description = "Room successfully retrieved.")
+    @ApiResponse(responseCode = "400", description = "Invalid date range or parameters.")
+    @GetMapping("/search")
+    public ResponseEntity <List <RoomResponse>> searchRooms(
+            @RequestParam(required = false)
+                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.time.LocalDateTime startDate,
+            @RequestParam(required = false)
+                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.time.LocalDateTime endDate,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String capacity ){
+
+        List<RoomResponse> availableRooms = roomService.searchAvailableRooms(startDate,endDate,type,capacity);
+        return ResponseEntity.ok(availableRooms);
+    }
 
 }
