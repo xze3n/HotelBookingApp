@@ -21,4 +21,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long>{
             LocalDate checkOut
     );
 
+    // Method for Upcoming Bookings
+    List<Booking> findByCheckInDateAfter(LocalDate now);
 }
