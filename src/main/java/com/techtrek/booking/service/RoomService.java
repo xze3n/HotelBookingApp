@@ -4,6 +4,7 @@ import com.techtrek.booking.dto.CreateRoomRequest;
 import com.techtrek.booking.dto.RoomResponse;
 import com.techtrek.booking.dto.UpdateRoomRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RoomService {
@@ -16,4 +17,6 @@ public interface RoomService {
     RoomResponse updateRoom(Long id, UpdateRoomRequest request);
 
     void deleteRoom(Long id);
+
+    List<RoomResponse> searchAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, String type, String capacity);
 }
