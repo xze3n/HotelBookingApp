@@ -33,7 +33,7 @@ class JwtServiceTest {
         String token = jwtService.generateToken(dummyUser);
 
         assertNotNull(token);
-        assertTrue(token.length() > 50);//jwt is always a long String
+        assertEquals(3, token.split("\\.").length, "A JWT should have exactly 3 parts separated by dots");
     }
 
     @Test
