@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -156,5 +158,13 @@ public class BookingServiceImpl implements BookingService {
                 booking.getStatus().name()
 
         );
+    }
+
+    @Override
+    public List<BookingResponse> getUpcomingBookings() {
+        List<Booking> bookings = bookingRepository.findByCheckInDateAfter(LocalDate.now());
+        return bookings.stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 }
