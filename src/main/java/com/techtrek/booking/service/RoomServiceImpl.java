@@ -3,13 +3,18 @@ package com.techtrek.booking.service;
 import com.techtrek.booking.dto.CreateRoomRequest;
 import com.techtrek.booking.dto.RoomResponse;
 import com.techtrek.booking.dto.UpdateRoomRequest;
+import com.techtrek.booking.entity.Booking;
 import com.techtrek.booking.entity.Room;
+import com.techtrek.booking.entity.RoomType;
 import com.techtrek.booking.exception.room.DuplicateRoomNumberException;
 import com.techtrek.booking.exception.room.RoomNotFoundException;
+import com.techtrek.booking.repository.BookingRepository;
 import com.techtrek.booking.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -81,6 +86,26 @@ public class RoomServiceImpl implements RoomService{
                 .orElseThrow(() -> new RoomNotFoundException("Room with id " + id + " not found"));
 
         roomRepository.delete(existingRoom);
+    }
+
+    @Override
+    public List<RoomResponse> searchAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, String type, String capacity) {
+
+        final RoomType roomType = (type == null) ? null
+           : switch (type.toLowerCase()){
+                case "single" -> RoomType.SINGLE;
+                case "double" -> RoomType.DOUBLE;
+                case "suite"  -> RoomType.SUITE;
+                default -> null;
+           };
+
+        Integer cap = (capacity != null) ? Integer.parseInt(capacity) : null;
+
+
+        return roomRepository.findAvailableRooms(startDate,endDate,roomType, cap)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     private RoomResponse mapToResponse(Room room){
