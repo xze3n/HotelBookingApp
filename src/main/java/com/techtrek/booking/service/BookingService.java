@@ -23,4 +23,6 @@ public interface BookingService {
 
     BookingResponse getBookingById(Long id);
 
+    // Get upcoming bookings
+    List<BookingResponse> getUpcomingBookings();
 }

@@ -25,17 +25,16 @@ public class BookingController {
 
         BookingResponse response = bookingService.createBooking(request);
         return ResponseEntity.ok(response);
-
     }
 
     @GetMapping
-    public ResponseEntity<List<BookingResponse>> getAllBookings(){
+    public ResponseEntity<List<BookingResponse>> getAllBookings() {
         List<BookingResponse> bookings = bookingService.getAllBookings();
         return ResponseEntity.ok(bookings);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> cancelBooking(@PathVariable Long id){
+    public ResponseEntity<Void> cancelBooking(@PathVariable Long id) {
         bookingService.cancelBooking(id);
         return ResponseEntity.noContent().build();
     }
@@ -43,23 +42,28 @@ public class BookingController {
     @PutMapping("/{id}")
     public ResponseEntity<BookingResponse> updateBooking(
             @PathVariable Long id,
-            @Valid @RequestBody BookingUpdateRequest request ){
+            @Valid @RequestBody BookingUpdateRequest request) {
         BookingResponse updateBooking = bookingService.updateBooking(id, request);
         return ResponseEntity.ok(updateBooking);
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookingResponse> getBookingById(@PathVariable Long id)
-    {
+    public ResponseEntity<BookingResponse> getBookingById(@PathVariable Long id) {
         BookingResponse booking = bookingService.getBookingById(id);
         return ResponseEntity.ok(booking);
     }
-    @GetMapping("/my")
-    public ResponseEntity<List<BookingResponse>> getMyBookings(){
-        List<BookingResponse> myBookings = bookingService.getBookingsForCurrentUser();
-            return ResponseEntity.ok(myBookings);
-        }
 
+    @GetMapping("/my")
+    public ResponseEntity<List<BookingResponse>> getMyBookings() {
+        List<BookingResponse> myBookings = bookingService.getBookingsForCurrentUser();
+        return ResponseEntity.ok(myBookings);
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<List<BookingResponse>> getUpcomingBookings() {
+        List<BookingResponse> upcomingBookings = bookingService.getUpcomingBookings();
+        return ResponseEntity.ok(upcomingBookings);
+    }
 
 }

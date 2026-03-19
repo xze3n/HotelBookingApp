@@ -33,6 +33,7 @@ public class SecurityConfiguration {
                                 "/webjars/**",
                                 "/rooms/**"
                         ).permitAll()
+                        .requestMatchers("/bookings/upcoming").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

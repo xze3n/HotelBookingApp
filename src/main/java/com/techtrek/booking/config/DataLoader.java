@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.temporal.ChronoUnit;
@@ -79,7 +80,6 @@ public class DataLoader implements CommandLineRunner {
             // CreatedAt
             LocalDate createdAt = checkIn.minusDays(faker.number().numberBetween(0,10));
 
-
             booking.setUser(randomUser);
             booking.setRoom(randomRoom);
             booking.setCheckInDate(checkIn);
@@ -87,7 +87,6 @@ public class DataLoader implements CommandLineRunner {
             booking.setTotalPrice(totalPrice);
             booking.setStatus(randomStatus);
             booking.setCreatedAt(createdAt);
-
             bookingRepository.save(booking);
         }
     }
@@ -136,13 +135,15 @@ public class DataLoader implements CommandLineRunner {
         }
     }
 
+    private final PasswordEncoder passwordEncoder;
+
     private void seedUsers() {
 
         for (int i = 1;i <= 20;i++){
             User user = new User();
 
             user.setEmail(faker.internet().emailAddress());
-            user.setPassword("password123");
+            user.setPassword(passwordEncoder.encode(("password123")));
             user.setFirstName(faker.name().firstName());
             user.setLastName(faker.name().lastName());
             user.setRole((i%10 == 0) ? Role.ADMIN : Role.CUSTOMER);
