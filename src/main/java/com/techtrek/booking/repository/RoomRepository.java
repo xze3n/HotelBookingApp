@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,10 +18,10 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             "(:roomType IS NULL OR r.type = :roomType) AND " +
             "(:cap IS NULL OR r.capacity = :cap ) AND " +
             "NOT EXISTS (SELECT b FROM Booking b WHERE b.room = r AND " +
-            "               b.startDate < :endDate AND b.endDate > :startDate)")
+            "               b.checkInDate < :endDate AND b.checkOutDate > :startDate)")
     List<Room> findAvailableRooms(
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
             @Param("roomType") RoomType roomType,
             @Param("cap")Integer cap
     );
