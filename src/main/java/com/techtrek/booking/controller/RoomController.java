@@ -87,9 +87,9 @@ public class RoomController {
     @GetMapping("/search")
     public ResponseEntity <List <RoomResponse>> searchRooms(
             @RequestParam(required = false)
-                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.time.LocalDateTime startDate,
+                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.time.LocalDate startDate,
             @RequestParam(required = false)
-                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.time.LocalDateTime endDate,
+                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.time.LocalDate endDate,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String capacity ){
 

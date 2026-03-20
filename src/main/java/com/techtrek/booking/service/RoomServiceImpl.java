@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class RoomServiceImpl implements RoomService{
     }
 
     @Override
-    public List<RoomResponse> searchAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, String type, String capacity) {
+    public List<RoomResponse> searchAvailableRooms(LocalDate startDate, LocalDate endDate, String type, String capacity) {
 
         final RoomType roomType = (type == null) ? null
            : switch (type.toLowerCase()){
