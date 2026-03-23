@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
-public class DataLoader implements CommandLineRunner {
+public class DataInitializer implements CommandLineRunner {
 
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
