@@ -1,4 +1,4 @@
-package com.techtrek.booking.config;
+package com.techtrek.booking.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

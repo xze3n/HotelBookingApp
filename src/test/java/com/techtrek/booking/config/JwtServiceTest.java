@@ -2,6 +2,7 @@ package com.techtrek.booking.config;
 
 import com.techtrek.booking.entity.Role;
 import com.techtrek.booking.entity.User;
+import com.techtrek.booking.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;

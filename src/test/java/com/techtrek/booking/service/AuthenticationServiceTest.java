@@ -1,9 +1,8 @@
 package com.techtrek.booking.service;
 
-import com.techtrek.booking.config.JwtService;
+import com.techtrek.booking.security.JwtService;
 import com.techtrek.booking.dto.AuthRequestResponse.RegisterRequest;
 import com.techtrek.booking.dto.AuthRequestResponse.AuthResponse;
-import com.techtrek.booking.entity.Role;
 import com.techtrek.booking.entity.User;
 import com.techtrek.booking.repository.UserRepository;
 import org.junit.jupiter.api.Test;

@@ -4,7 +4,7 @@ import com.techtrek.booking.dto.AuthRequestResponse.*;
 import com.techtrek.booking.entity.Role;
 import com.techtrek.booking.entity.User;
 import com.techtrek.booking.repository.UserRepository;
-import com.techtrek.booking.config.JwtService;
+import com.techtrek.booking.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
