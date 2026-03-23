@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class RoomController {
     @ApiResponse(responseCode = "201", description = "Room successfully created.")
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "409", description = "Room number already exists.")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<RoomResponse> createRoom(@Valid @RequestBody CreateRoomRequest request){
         RoomResponse createdRoom = roomService.createRoom(request);
@@ -62,6 +64,7 @@ public class RoomController {
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "404", description = "Room not found.")
     @ApiResponse(responseCode = "409", description = "Room number already exists.")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<RoomResponse> updateRoom(@PathVariable Long id,
                                                    @Valid @RequestBody UpdateRoomRequest request){
@@ -74,6 +77,7 @@ public class RoomController {
     @Operation(summary = "Delete a room", description = "Deletes a room by id.")
     @ApiResponse(responseCode = "204", description = "Room successfully deleted.")
     @ApiResponse(responseCode = "404", description = "Room not found.")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRoom(@PathVariable Long id){
         roomService.deleteRoom(id);
