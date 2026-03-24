@@ -46,6 +46,7 @@ public class UserController {
     // GET /users - list all (admin)
     @Operation(summary = "List all users", description = "Returns a list of all registered users. (Admin only)")
     @ApiResponse(responseCode = "200", description = "Users listed successfully.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
@@ -55,6 +56,7 @@ public class UserController {
     @Operation(summary = "Get a user by id", description = "Returns the details of a user with the specified id. (Admin only)")
     @ApiResponse(responseCode = "200", description = "User successfully retrieved.")
     @ApiResponse(responseCode = "404", description = "User not found.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
@@ -65,6 +67,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "User successfully updated.")
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "404", description = "User not found.")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUserById(
             @PathVariable Long id,
@@ -76,6 +79,7 @@ public class UserController {
     @Operation(summary = "Delete a user", description = "Deletes a user by id. (Admin only)")
     @ApiResponse(responseCode = "204", description = "User successfully deleted.")
     @ApiResponse(responseCode = "404", description = "User not found.")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
@@ -87,6 +91,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "User successfully created.")
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "409", description = "Email already exists.")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserResponse> createUser(
             @Valid @RequestBody UserRegisterRequest request) {
