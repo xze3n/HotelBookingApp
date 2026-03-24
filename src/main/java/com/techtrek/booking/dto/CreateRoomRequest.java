@@ -24,7 +24,7 @@ public class CreateRoomRequest {
     private int capacity;
 
     @NotNull(message = "Price per night is required.")
-    @DecimalMin(value = "0.0", inclusive = true, message = "Price per night must be greater than or equal to zero")
+    @DecimalMin(value = "0.0", message = "Price per night must be greater than or equal to zero")
     private BigDecimal pricePerNight;
 
     private String description;

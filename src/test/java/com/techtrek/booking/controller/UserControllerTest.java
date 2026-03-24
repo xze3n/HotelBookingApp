@@ -5,6 +5,7 @@ import com.techtrek.booking.dto.UserResponse;
 import com.techtrek.booking.dto.UserUpdateRequest;
 import com.techtrek.booking.entity.Role;
 import com.techtrek.booking.service.UserService;
+import lombok.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +40,7 @@ class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private UserResponse mockResponse;
 
     @BeforeEach
@@ -47,11 +48,11 @@ class UserControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(userController)
                 .setCustomArgumentResolvers(new org.springframework.web.method.support.HandlerMethodArgumentResolver() {
                     @Override
-                    public boolean supportsParameter(org.springframework.core.MethodParameter parameter) {
+                    public boolean supportsParameter(@NonNull org.springframework.core.MethodParameter parameter) {
                         return parameter.getParameterType().isAssignableFrom(org.springframework.security.core.userdetails.UserDetails.class);
                     }
                     @Override
-                    public Object resolveArgument(org.springframework.core.MethodParameter parameter, org.springframework.web.method.support.ModelAndViewContainer mavContainer, org.springframework.web.context.request.NativeWebRequest webRequest, org.springframework.web.bind.support.WebDataBinderFactory binderFactory) {
+                    public Object resolveArgument(@NonNull org.springframework.core.MethodParameter parameter, org.springframework.web.method.support.ModelAndViewContainer mavContainer, @NonNull org.springframework.web.context.request.NativeWebRequest webRequest, org.springframework.web.bind.support.WebDataBinderFactory binderFactory) {
                         return new org.springframework.security.core.userdetails.User(
                                 "test@example.com", "pass", java.util.Collections.emptyList());
                     }

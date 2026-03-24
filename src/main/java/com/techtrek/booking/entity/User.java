@@ -55,11 +55,13 @@ public class User implements UserDetails {
         this.createdAt = LocalDateTime.now();
     }
 
+    @NonNull
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
+    @NonNull
     @Override
     public String getUsername() {
         return email;

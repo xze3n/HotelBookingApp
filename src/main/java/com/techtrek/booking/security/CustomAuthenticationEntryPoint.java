@@ -3,6 +3,7 @@ package com.techtrek.booking.security;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -18,7 +19,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(
             HttpServletRequest request,
             HttpServletResponse response,
-            AuthenticationException ex
+            @NonNull AuthenticationException ex
     ) throws IOException, java.io.IOException {
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

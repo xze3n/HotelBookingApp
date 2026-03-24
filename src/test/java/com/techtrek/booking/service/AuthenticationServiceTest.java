@@ -23,6 +23,8 @@ class AuthenticationServiceTest {
     @Mock private UserRepository userRepository;
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private JwtService jwtService;
+
+    @SuppressWarnings("unused")
     @Mock private AuthenticationManager authenticationManager;
 
     // @InjectMocks takes the real class and "stuffs" the above mock clones into it

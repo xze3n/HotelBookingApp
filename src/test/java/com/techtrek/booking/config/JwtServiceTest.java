@@ -16,7 +16,7 @@ class JwtServiceTest {
 
     @BeforeEach
     void setUp() {
-        //manually initializing the service, without springboot
+        //manually initializing the service, without SpringBoot
         jwtService = new JwtService();
 
         //injecting a false key, but eligible for the HS256 algorithm

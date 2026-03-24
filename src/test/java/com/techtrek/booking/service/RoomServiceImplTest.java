@@ -92,7 +92,7 @@ public class RoomServiceImplTest {
         List<RoomResponse> result = roomService.getAllRooms();
 
         assertEquals(1, result.size());
-        assertEquals("1", result.get(0).getRoomNumber());
+        assertEquals("1", result.getFirst().getRoomNumber());
         verify(roomRepository).findAll();
     }
 
@@ -215,9 +215,9 @@ public class RoomServiceImplTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("2", result.get(0).getRoomNumber());
-        assertEquals(RoomType.DOUBLE, result.get(0).getType());
-        assertEquals(2, result.get(0).getCapacity());
+        assertEquals("2", result.getFirst().getRoomNumber());
+        assertEquals(RoomType.DOUBLE, result.getFirst().getType());
+        assertEquals(2, result.getFirst().getCapacity());
 
         verify(roomRepository).findAvailableRooms(startDate, endDate, RoomType.DOUBLE, 2);
     }
@@ -235,7 +235,7 @@ public class RoomServiceImplTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(room.getRoomNumber(), result.get(0).getRoomNumber());
+        assertEquals(room.getRoomNumber(), result.getFirst().getRoomNumber());
 
         verify(roomRepository).findAvailableRooms(startDate, endDate, null, null);
     }

@@ -5,7 +5,6 @@ import com.techtrek.booking.dto.RoomResponse;
 import com.techtrek.booking.dto.UpdateRoomRequest;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RoomService {

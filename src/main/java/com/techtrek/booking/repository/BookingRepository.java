@@ -11,10 +11,10 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long>{
-    //Toate rezervarile unui user;
+    // All reservations of a user;
     List<Booking> findByUser(User user);
 
-    //Toate rezervarile care se suprapun cu intervalul dat pentru o camera;
+    // All reservations that are overlapping with the given interval for a room;
     List<Booking> findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
             Room room,
             LocalDate checkIn,

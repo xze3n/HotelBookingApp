@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     // All custom exceptions : UserNotFoundException, RoomNotAvailableException ...
+    @SuppressWarnings("unused")
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleBaseException(
             BaseException ex,
@@ -31,6 +32,7 @@ public class GlobalExceptionHandler {
     }
 
     // Validation: @NotBlank,@NotEmpty ...
+    @SuppressWarnings("unused")
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation (
             MethodArgumentNotValidException ex,
@@ -50,6 +52,7 @@ public class GlobalExceptionHandler {
     }
 
     // Fallback : any other unexpected exception
+    @SuppressWarnings("unused")
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(
             Exception ignored,

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name="bookings",indexes = {@Index(name="idx_booking_room_dates",columnList="room_id,check_in_date,check_out_date")})
