@@ -26,6 +26,7 @@ public class DataInitializer implements CommandLineRunner {
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private final Faker faker = new Faker();
 
@@ -92,29 +93,30 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void seedRooms() {
-        final int capacity = 6;
-
-        for (int i = 1;i <= 40;i++){
+        for (int i = 1; i <= 40; ++i){
             Room room = new Room();
             // ROOM NUMBER
             room.setRoomNumber("Room " + i);
             // TYPE
             RoomType[] types = RoomType.values();
-            room.setType(types[
-                    faker.number().numberBetween(0,types.length) ]
-            );
-            // CAPACITY
-            room.setCapacity(faker.number().numberBetween(1,capacity));
-            // PRICE PER NIGHT
-            room.setPricePerNight(
-                    BigDecimal.valueOf(
-                            faker.number().randomDouble(
-                                    2,
-                                    300,
-                                    2000
-                            )
-                    )
-            );
+            RoomType assignedType = types[faker.number().numberBetween(0,types.length)];
+            room.setType(assignedType);
+            // CAPACITY & PRICE PER NIGHT
+            switch(assignedType) {
+                case SINGLE -> {
+                    room.setCapacity(1);
+                    room.setPricePerNight(BigDecimal.valueOf(faker.number().randomDouble(2, 300, 700)));
+                }
+                case DOUBLE -> {
+                    room.setCapacity(2);
+                    room.setPricePerNight(BigDecimal.valueOf(faker.number().randomDouble(2, 700, 1400)));
+                }
+                case SUITE -> {
+                    room.setCapacity(faker.number().numberBetween(3, 5)); // GENERATES 3 OR 4
+                    room.setPricePerNight(BigDecimal.valueOf(faker.number().randomDouble(2, 1400, 2000)));
+                }
+            }
+
             // DESCRIPTION
             room.setDescription(
                     "Info: " + room.getRoomNumber()
@@ -134,8 +136,6 @@ public class DataInitializer implements CommandLineRunner {
             roomRepository.save(room);
         }
     }
-
-    private final PasswordEncoder passwordEncoder;
 
     private void seedUsers() {
 
