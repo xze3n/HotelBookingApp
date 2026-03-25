@@ -15,7 +15,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>{
     List<Booking> findByUser(User user);
 
     // All reservations that are overlapping with the given interval for a room;
-    List<Booking> findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
+    List<Booking> findByRoomAndCheckOutDateAfterAndCheckInDateBeforeAndStatus(
             Room room,
             LocalDate checkIn,
             LocalDate checkOut,

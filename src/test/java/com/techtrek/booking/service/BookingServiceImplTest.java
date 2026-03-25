@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -72,6 +74,7 @@ class BookingServiceImplTest {
         testBooking.setCheckOutDate(LocalDate.now().plusDays(3));
         testBooking.setStatus(BookingStatus.ACTIVE);
         testBooking.setTotalPrice(new BigDecimal("200"));
+        lenient().when(authentication.isAuthenticated()).thenReturn(true);
         lenient().when(userDetails.getUsername()).thenReturn("test@example.com");
         lenient().when(authentication.getPrincipal()).thenReturn(userDetails);
         lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -92,11 +95,12 @@ class BookingServiceImplTest {
         );
 
         when(roomRepository.findByType(RoomType.SINGLE)).thenReturn(List.of(testRoom));
-        when(bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
-                any(),
-                any(),
-                any()))
-                .thenReturn(List.of());
+        when(bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBeforeAndStatus(
+                any(Room.class),
+                any(LocalDate.class),
+                any(LocalDate.class),
+                any(BookingStatus.class)))
+                .thenReturn(new ArrayList<>());
         when(bookingRepository.save(any())).thenReturn(testBooking);
         BookingResponse response = bookingService.createBooking(request);
         assertNotNull(response);
@@ -112,6 +116,7 @@ class BookingServiceImplTest {
                 RoomType.SINGLE,
                 LocalDate.now().plusDays(3),
                 LocalDate.now().plusDays(1)
+
 
         );
 
@@ -149,10 +154,11 @@ class BookingServiceImplTest {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
         when(roomRepository.findByType(RoomType.SINGLE))
                 .thenReturn(new ArrayList<>(List.of(testRoom)));
-        when(bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
-                any(),
-                any(),
-                any()))
+        when(bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBeforeAndStatus(
+                any(Room.class),
+                any(LocalDate.class),
+                any(LocalDate.class),
+                any(BookingStatus.class)))
                 .thenReturn(new ArrayList<>());
 
         when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -165,7 +171,6 @@ class BookingServiceImplTest {
 
     @Test
     void getBookingsForCurrentUser_ShouldReturnList() {
-
         when(bookingRepository.findByUser(testUser)).thenReturn(List.of(testBooking));
         List<BookingResponse> result = bookingService.getBookingsForCurrentUser();
         assertEquals(1, result.size());
