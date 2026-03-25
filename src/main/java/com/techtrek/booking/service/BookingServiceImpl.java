@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import java.time.temporal.ChronoUnit;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -41,8 +43,12 @@ public class BookingServiceImpl implements BookingService {
             List<Booking> overlappingBookings = bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
                     room,
                     request.getCheckInDate(),
-                    request.getCheckOutDate()
+                    request.getCheckOutDate(),
+                    BookingStatus.ACTIVE
             );
+
+            overlappingBookings.removeIf(b -> b.getStatus() == BookingStatus.CANCELLED);
+
             if (overlappingBookings.isEmpty()) {
 
                 Booking booking = new Booking();
@@ -51,6 +57,10 @@ public class BookingServiceImpl implements BookingService {
                 booking.setCheckInDate(request.getCheckInDate());
                 booking.setCheckOutDate(request.getCheckOutDate());
                 booking.setStatus(BookingStatus.ACTIVE);
+
+                long days = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
+                BigDecimal totalPrice = room.getPricePerNight().multiply(BigDecimal.valueOf(days));
+                booking.setTotalPrice(totalPrice);
 
                 Booking savedBooking = bookingRepository.save(booking);
                 return mapToResponse(savedBooking);
@@ -79,7 +89,10 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingAlreadyCancelledException("Booking with id: " + bookingId + " is already cancelled.");
         }
         User currentUser = getCurrentUser();
-        if(!booking.getUser().getId().equals(currentUser.getId())){
+        boolean isOwner = booking.getUser().getId().equals(currentUser.getId());
+        boolean isAdmin = currentUser.getRole() == com.techtrek.booking.entity.Role.ADMIN;
+
+        if(!isOwner && !isAdmin){
             throw new UnathorizedBookingAccesException("You are not authorized to cancel this booking.");
         }
 
@@ -95,7 +108,10 @@ public class BookingServiceImpl implements BookingService {
             throw new InvalidDateRangeException("Check-out date must be after check-in date.");
         }
         User currentUser = getCurrentUser();
-        if(!booking.getUser().getId().equals(currentUser.getId())){
+        boolean isOwner = booking.getUser().getId().equals(currentUser.getId());
+        boolean isAdmin = currentUser.getRole() == com.techtrek.booking.entity.Role.ADMIN;
+
+        if(!isOwner && !isAdmin){
             throw new UnathorizedBookingAccesException("You are not authorized to update this booking.");
         }
         List<Room> rooms = roomRepository.findByType(request.getRoomType());
@@ -104,9 +120,14 @@ public class BookingServiceImpl implements BookingService {
             List<Booking> overlappingBookings = bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
                     room,
                     request.getCheckInDate(),
-                    request.getCheckOutDate()
+                    request.getCheckOutDate(),
+                    BookingStatus.ACTIVE
             );
+
             overlappingBookings.removeIf(b ->b.getId().equals(bookingId));
+            // we remove the cancelled bookings from the list
+            overlappingBookings.removeIf(b -> b.getStatus() == BookingStatus.CANCELLED);
+
             if (overlappingBookings.isEmpty()){
                 availableRoom = room;
                 break;
@@ -118,6 +139,11 @@ public class BookingServiceImpl implements BookingService {
         booking.setRoom(availableRoom);
         booking.setCheckInDate(request.getCheckInDate());
         booking.setCheckOutDate(request.getCheckOutDate());
+
+        long updatedDays = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
+        BigDecimal updatedTotalPrice = availableRoom.getPricePerNight().multiply(BigDecimal.valueOf(updatedDays));
+        booking.setTotalPrice(updatedTotalPrice);
+
         Booking saved = bookingRepository.save(booking);
         return mapToResponse(saved);
 

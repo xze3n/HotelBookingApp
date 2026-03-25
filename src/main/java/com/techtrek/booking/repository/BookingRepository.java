@@ -18,7 +18,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>{
     List<Booking> findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
             Room room,
             LocalDate checkIn,
-            LocalDate checkOut
+            LocalDate checkOut,
+            com.techtrek.booking.entity.BookingStatus status
     );
 
     // Method for Upcoming Bookings

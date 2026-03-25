@@ -16,7 +16,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             "(:roomType IS NULL OR r.type = :roomType) AND " +
             "(:cap IS NULL OR r.capacity = :cap ) AND " +
             "NOT EXISTS (SELECT b FROM Booking b WHERE b.room = r AND " +
-            "               b.checkInDate < :endDate AND b.checkOutDate > :startDate)")
+            "b.status = 'ACTIVE' AND " +
+            "b.checkInDate < :endDate AND b.checkOutDate > :startDate)")
     List<Room> findAvailableRooms(
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
