@@ -50,6 +50,9 @@ public class User implements UserDetails {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Booking> bookings;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
