@@ -50,7 +50,7 @@ public class RoomRepositoryTest {
         List<Room> result = roomRepository.findAvailableRooms(startDate, endDate, null, null);
 
         assertEquals(1, result.size());
-        assertEquals("1", result.get(0).getRoomNumber());
+        assertEquals("1", result.getFirst().getRoomNumber());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class RoomRepositoryTest {
         List<Room> result = roomRepository.findAvailableRooms(startDate, endDate, null, null);
 
         assertEquals(1, result.size());
-        assertEquals("3", result.get(0).getRoomNumber());
+        assertEquals("3", result.getFirst().getRoomNumber());
     }
 
     @Test
@@ -112,8 +112,8 @@ public class RoomRepositoryTest {
         List<Room> result = roomRepository.findAvailableRooms(startDate, endDate, RoomType.DOUBLE, null);
 
         assertEquals(1, result.size());
-        assertEquals("5", result.get(0).getRoomNumber());
-        assertEquals(RoomType.DOUBLE, result.get(0).getType());
+        assertEquals("5", result.getFirst().getRoomNumber());
+        assertEquals(RoomType.DOUBLE, result.getFirst().getType());
     }
 
     @Test
@@ -131,8 +131,8 @@ public class RoomRepositoryTest {
         List<Room> result = roomRepository.findAvailableRooms(startDate, endDate,null,3);
 
         assertEquals(1, result.size());
-        assertEquals("7", result.get(0).getRoomNumber());
-        assertEquals(3, result.get(0).getCapacity());
+        assertEquals("7", result.getFirst().getRoomNumber());
+        assertEquals(3, result.getFirst().getCapacity());
     }
 
 

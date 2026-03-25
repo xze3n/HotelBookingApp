@@ -3,19 +3,16 @@ package com.techtrek.booking.service;
 import com.techtrek.booking.dto.CreateRoomRequest;
 import com.techtrek.booking.dto.RoomResponse;
 import com.techtrek.booking.dto.UpdateRoomRequest;
-import com.techtrek.booking.entity.Booking;
 import com.techtrek.booking.entity.Room;
 import com.techtrek.booking.entity.RoomType;
 import com.techtrek.booking.exception.room.DuplicateRoomNumberException;
+import com.techtrek.booking.exception.room.InvalidRoomFilterException;
 import com.techtrek.booking.exception.room.RoomNotFoundException;
-import com.techtrek.booking.repository.BookingRepository;
 import com.techtrek.booking.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -54,7 +51,7 @@ public class RoomServiceImpl implements RoomService{
     @Override
     public RoomResponse getRoomById(Long id){
         Room room = roomRepository.findById(id)
-                .orElseThrow(() -> new RoomNotFoundException("Room with id " + id + "not found"));
+                .orElseThrow(() -> new RoomNotFoundException("Room with id " + id + " not found"));
 
         return mapToResponse(room);
     }
@@ -68,7 +65,7 @@ public class RoomServiceImpl implements RoomService{
         if(!existingRoom.getRoomNumber().equals(request.getRoomNumber())
                 && roomRepository.existsByRoomNumber(request.getRoomNumber())) {
             throw new DuplicateRoomNumberException("Room with number "
-                    + request.getRoomNumber() + "already exists");
+                    + request.getRoomNumber() + " already exists");
         }
 
         existingRoom.setRoomNumber(request.getRoomNumber());
@@ -97,11 +94,17 @@ public class RoomServiceImpl implements RoomService{
                 case "single" -> RoomType.SINGLE;
                 case "double" -> RoomType.DOUBLE;
                 case "suite"  -> RoomType.SUITE;
-                default -> null;
+                default -> throw new InvalidRoomFilterException("Invalid room type: " + type);
            };
 
-        Integer cap = (capacity != null) ? Integer.parseInt(capacity) : null;
-
+        Integer cap = null;
+        if (capacity != null) {
+            try {
+                cap = Integer.parseInt(capacity);
+            } catch (NumberFormatException e) {
+                throw new InvalidRoomFilterException("Capacity must be a number: " + capacity);
+            }
+        }
 
         return roomRepository.findAvailableRooms(startDate,endDate,roomType, cap)
                 .stream()

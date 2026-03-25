@@ -29,7 +29,7 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    //CREEARE BOOKING
+    //CREATE BOOKING
     public BookingResponse createBooking(CreateBookingRequest request) {
         if(!request.getCheckOutDate().isAfter(request.getCheckInDate())){
             throw new InvalidDateRangeException("Check-out date must be after check-in date");
@@ -60,7 +60,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
 
-    //RETURNEAZA TOATE REZERVARILE
+    //RETURN ALL RESERVATIONS
     @Override
     public List<BookingResponse> getAllBookings(){
         return bookingRepository.findAll()
@@ -70,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
 
     }
 
-    //ANULEAZA O REZERVARE DUPA ID
+    //CANCEL A RESERVATION BY ID
     @Override
     public void cancelBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
@@ -86,7 +86,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
     }
-    //UPDATE REZERVARE DUPA ID
+    //UPDATE RESERVATION BY ID
     @Override
     public BookingResponse updateBooking(Long bookingId, BookingUpdateRequest request){
         Booking booking = bookingRepository.findById(bookingId)
@@ -140,12 +140,21 @@ public class BookingServiceImpl implements BookingService {
         return mapToResponse(booking);
     }
     private User getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UserNotFoundException("No authenticated user found.");
+        }
+
+        Object principal = authentication.getPrincipal();
+
         String email;
         if (principal instanceof UserDetails userDetails){
             email = userDetails.getUsername();
-        } else{
+        } else if (principal != null){
             email=principal.toString();
+        } else {
+            throw new UserNotFoundException("No authenticated user found.");
         }
         return userRepository.findByEmail(email)
                 .orElseThrow(()-> new UserNotFoundException("User not found,"));

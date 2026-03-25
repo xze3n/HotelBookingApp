@@ -29,6 +29,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private final Faker faker = new Faker();
 
+    @SuppressWarnings("RedundantThrows")
     @Override
     public void run(String @NonNull ... args) throws Exception {
         if (roomRepository.count() > 0) return;

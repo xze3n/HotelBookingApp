@@ -7,16 +7,16 @@ import java.util.List;
 
 public interface BookingService {
 
-    //CREEARE BOOKING
+    //CREATE BOOKING
     BookingResponse createBooking(CreateBookingRequest request);
 
-    //RETURNARE TOATE REZERVARI
+    //RETURN ALL BOOKINGS
     List<BookingResponse> getAllBookings();
 
-    //ANULEAZA O REZERVARE DUPA ID
+    //CANCEL A BOOKING BY ID
     void cancelBooking(Long bookingId);
 
-    //UPDATEAZA O REZERVARE DUPA ID
+    //UPDATE A BOOKING BY ID
     BookingResponse updateBooking(Long bookingId, BookingUpdateRequest request);
 
     List<BookingResponse> getBookingsForCurrentUser();

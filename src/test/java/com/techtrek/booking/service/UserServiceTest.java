@@ -90,7 +90,7 @@ class UserServiceTest {
         List<UserResponse> responses = userService.getAllUsers();
 
         assertEquals(1, responses.size());
-        assertEquals(mockUser.getEmail(), responses.get(0).email());
+        assertEquals(mockUser.getEmail(), responses.getFirst().email());
         verify(userRepository, times(1)).findAll();
     }
 
