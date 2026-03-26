@@ -43,6 +43,12 @@ public class SecurityConfiguration {
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/rooms/**").permitAll()
                         .requestMatchers("/bookings/upcoming").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/users/me").hasAnyRole("CUSTOMER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/users/me").hasAnyRole("CUSTOMER", "ADMIN")
+
+                        .requestMatchers("/users/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
