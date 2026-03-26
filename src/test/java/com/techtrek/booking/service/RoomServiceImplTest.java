@@ -6,6 +6,7 @@ import com.techtrek.booking.dto.UpdateRoomRequest;
 import com.techtrek.booking.entity.Room;
 import com.techtrek.booking.entity.RoomType;
 import com.techtrek.booking.exception.room.DuplicateRoomNumberException;
+import com.techtrek.booking.exception.room.InvalidRoomFilterException;
 import com.techtrek.booking.exception.room.RoomNotFoundException;
 import com.techtrek.booking.repository.RoomRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -240,32 +241,28 @@ public class RoomServiceImplTest {
         verify(roomRepository).findAvailableRooms(startDate, endDate, null, null);
     }
 
+
     @Test
     void searchAvailableRooms_ShouldThrowException_WhenCapacityIsNotANumber(){
         LocalDate startDate = LocalDate.of(2026, 4, 10);
         LocalDate endDate = LocalDate.of(2026, 4, 12);
-        assertThrows(NumberFormatException.class,
+        assertThrows(InvalidRoomFilterException.class,
                 () -> roomService.searchAvailableRooms(startDate, endDate,
                         "double", "asdf"));
 
         verify(roomRepository, never()).findAvailableRooms(any(), any(), any(), any());
     }
 
+
     @Test
     void searchAvailableRooms_ShouldPassNullRoomType_WhenTypeIsInvalid(){
         LocalDate startDate = LocalDate.of(2026, 4, 10);
         LocalDate endDate = LocalDate.of(2026, 4, 12);
 
-        when(roomRepository.findAvailableRooms(startDate, endDate, null, 4))
-                .thenReturn(List.of(room));
+        assertThrows(InvalidRoomFilterException.class,
+                ()-> roomService.searchAvailableRooms(startDate, endDate, "jshsg", "2"));
 
-        List<RoomResponse> result = roomService.searchAvailableRooms(
-                startDate, endDate, "4 rooms", "4");
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-
-        verify(roomRepository).findAvailableRooms(startDate, endDate, null, 4);
+        verify(roomRepository, never()).findAvailableRooms(any(), any(), any(), any());
     }
 }
 
