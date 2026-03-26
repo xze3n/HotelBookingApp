@@ -25,7 +25,7 @@ public class RoomServiceImpl implements RoomService{
     public RoomResponse createRoom(CreateRoomRequest request){
         if (roomRepository.existsByRoomNumber(request.getRoomNumber())){
             throw new DuplicateRoomNumberException("Room with number "
-                    + request.getRoomNumber() + "already exists");
+                    + request.getRoomNumber() + " already exists");
         }
 
         Room room = new Room();
