@@ -31,7 +31,6 @@ import static org.mockito.ArgumentMatchers.any;
 @ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
     @Mock
-
     private BookingRepository bookingRepository;
     @Mock
     private RoomRepository roomRepository;
@@ -86,14 +85,12 @@ class BookingServiceImplTest {
 
     @Test
     void createBooking_ShouldReturnBookingResponse() {
-
         CreateBookingRequest request = new CreateBookingRequest(
                 RoomType.SINGLE,
                 LocalDate.now().plusDays(1),
                 LocalDate.now().plusDays(3)
 
         );
-
         when(roomRepository.findByType(RoomType.SINGLE)).thenReturn(List.of(testRoom));
         when(bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBeforeAndStatus(
                 any(Room.class),
@@ -107,23 +104,16 @@ class BookingServiceImplTest {
         assertEquals("101", response.roomNumber());
 
     }
-
     @Test
     void createBooking_ShouldThrow_WhenDatesInvalid() {
-
         CreateBookingRequest request = new CreateBookingRequest(
-
                 RoomType.SINGLE,
                 LocalDate.now().plusDays(3),
                 LocalDate.now().plusDays(1)
-
-
         );
-
         assertThrows(InvalidDateRangeException
                         .class,
                         () -> bookingService.createBooking(request));
-
     }
 
     @Test
@@ -135,16 +125,13 @@ class BookingServiceImplTest {
 
     @Test
     void cancelBooking_ShouldWork() {
-
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(testBooking));
         bookingService.cancelBooking(1L);
         assertEquals(BookingStatus.CANCELLED, testBooking.getStatus());
-
     }
 
     @Test
     void updateBooking_ShouldWork() {
-
         BookingUpdateRequest request = new BookingUpdateRequest(
                 RoomType.SINGLE,
                 LocalDate.now().plusDays(2),
@@ -177,7 +164,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-
     void getBookingById_ShouldReturnBooking() {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(testBooking));
         BookingResponse response = bookingService.getBookingById(1L);
