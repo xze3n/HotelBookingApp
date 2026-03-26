@@ -72,7 +72,7 @@ public class BookingRepositoryTest {
     void findByUser_ShouldReturnBookings_WhenUserHasBookings(){
         List<Booking> bookings = bookingRepository.findByUser(testUser);
         assertThat(bookings).hasSize(1);
-        String email = bookings.getFirst().getUser().getEmail();
+        String email = bookings.get(0).getUser().getEmail();
         assertThat(email).isEqualTo("booking@example.com");
     }
 
@@ -96,10 +96,11 @@ public class BookingRepositoryTest {
     @Test
     void findByRoomAndDates_ShouldReturnOverlappingBookings(){
         List<Booking> overlapping = bookingRepository
-                .findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
+                .findByRoomAndCheckOutDateAfterAndCheckInDateBeforeAndStatus(
                         testRoom,
                         LocalDate.now().plusDays(1),
-                        LocalDate.now().plusDays(3)
+                        LocalDate.now().plusDays(3),
+                        BookingStatus.ACTIVE
                 );
         assertThat(overlapping).hasSize(1);
     }
@@ -107,10 +108,11 @@ public class BookingRepositoryTest {
     @Test
     void findByRoomAndDates_ShouldReturnEmpty_WhenNoOverlap(){
         List<Booking> overlapping = bookingRepository
-                .findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
+                .findByRoomAndCheckOutDateAfterAndCheckInDateBeforeAndStatus(
                         testRoom,
                         LocalDate.now().plusDays(10),
-                        LocalDate.now().plusDays(15)
+                        LocalDate.now().plusDays(15),
+                        BookingStatus.ACTIVE
                 );
         assertThat(overlapping).isEmpty();
     }

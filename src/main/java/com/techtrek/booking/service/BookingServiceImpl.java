@@ -40,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
         List<Room> rooms = roomRepository.findByType(request.getRoomType());
 
         for (Room room : rooms) {
-            List<Booking> overlappingBookings = bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
+            List<Booking> overlappingBookings = bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBeforeAndStatus(
                     room,
                     request.getCheckInDate(),
                     request.getCheckOutDate(),
@@ -117,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
         List<Room> rooms = roomRepository.findByType(request.getRoomType());
         Room availableRoom = null;
         for (Room room : rooms){
-            List<Booking> overlappingBookings = bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
+            List<Booking> overlappingBookings = bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBeforeAndStatus(
                     room,
                     request.getCheckInDate(),
                     request.getCheckOutDate(),

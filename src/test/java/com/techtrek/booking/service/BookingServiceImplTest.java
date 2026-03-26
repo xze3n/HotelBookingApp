@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,7 +31,6 @@ import static org.mockito.ArgumentMatchers.any;
 @ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
     @Mock
-
     private BookingRepository bookingRepository;
     @Mock
     private RoomRepository roomRepository;
@@ -72,6 +73,7 @@ class BookingServiceImplTest {
         testBooking.setCheckOutDate(LocalDate.now().plusDays(3));
         testBooking.setStatus(BookingStatus.ACTIVE);
         testBooking.setTotalPrice(new BigDecimal("200"));
+        lenient().when(authentication.isAuthenticated()).thenReturn(true);
         lenient().when(userDetails.getUsername()).thenReturn("test@example.com");
         lenient().when(authentication.getPrincipal()).thenReturn(userDetails);
         lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -83,42 +85,35 @@ class BookingServiceImplTest {
 
     @Test
     void createBooking_ShouldReturnBookingResponse() {
-
         CreateBookingRequest request = new CreateBookingRequest(
                 RoomType.SINGLE,
                 LocalDate.now().plusDays(1),
                 LocalDate.now().plusDays(3)
 
         );
-
         when(roomRepository.findByType(RoomType.SINGLE)).thenReturn(List.of(testRoom));
-        when(bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
-                any(),
-                any(),
-                any()))
-                .thenReturn(List.of());
+        when(bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBeforeAndStatus(
+                any(Room.class),
+                any(LocalDate.class),
+                any(LocalDate.class),
+                any(BookingStatus.class)))
+                .thenReturn(new ArrayList<>());
         when(bookingRepository.save(any())).thenReturn(testBooking);
         BookingResponse response = bookingService.createBooking(request);
         assertNotNull(response);
         assertEquals("101", response.roomNumber());
 
     }
-
     @Test
     void createBooking_ShouldThrow_WhenDatesInvalid() {
-
         CreateBookingRequest request = new CreateBookingRequest(
-
                 RoomType.SINGLE,
                 LocalDate.now().plusDays(3),
                 LocalDate.now().plusDays(1)
-
         );
-
         assertThrows(InvalidDateRangeException
                         .class,
                         () -> bookingService.createBooking(request));
-
     }
 
     @Test
@@ -130,16 +125,13 @@ class BookingServiceImplTest {
 
     @Test
     void cancelBooking_ShouldWork() {
-
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(testBooking));
         bookingService.cancelBooking(1L);
         assertEquals(BookingStatus.CANCELLED, testBooking.getStatus());
-
     }
 
     @Test
     void updateBooking_ShouldWork() {
-
         BookingUpdateRequest request = new BookingUpdateRequest(
                 RoomType.SINGLE,
                 LocalDate.now().plusDays(2),
@@ -149,10 +141,11 @@ class BookingServiceImplTest {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
         when(roomRepository.findByType(RoomType.SINGLE))
                 .thenReturn(new ArrayList<>(List.of(testRoom)));
-        when(bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBefore(
-                any(),
-                any(),
-                any()))
+        when(bookingRepository.findByRoomAndCheckOutDateAfterAndCheckInDateBeforeAndStatus(
+                any(Room.class),
+                any(LocalDate.class),
+                any(LocalDate.class),
+                any(BookingStatus.class)))
                 .thenReturn(new ArrayList<>());
 
         when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -165,14 +158,12 @@ class BookingServiceImplTest {
 
     @Test
     void getBookingsForCurrentUser_ShouldReturnList() {
-
         when(bookingRepository.findByUser(testUser)).thenReturn(List.of(testBooking));
         List<BookingResponse> result = bookingService.getBookingsForCurrentUser();
         assertEquals(1, result.size());
     }
 
     @Test
-
     void getBookingById_ShouldReturnBooking() {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(testBooking));
         BookingResponse response = bookingService.getBookingById(1L);
