@@ -83,36 +83,37 @@ public class BookingServiceImpl implements BookingService {
     //CANCEL A RESERVATION BY ID
     @Override
     public void cancelBooking(Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + bookingId + " is not found."));
-        if (booking.getStatus() == BookingStatus.CANCELLED){
-            throw new BookingAlreadyCancelledException("Booking with id: " + bookingId + " is already cancelled.");
-        }
         User currentUser = getCurrentUser();
-        boolean isOwner = booking.getUser().getId().equals(currentUser.getId());
         boolean isAdmin = currentUser.getRole() == com.techtrek.booking.entity.Role.ADMIN;
-
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> isAdmin
+                        ? new BookingNotFoundException("Booking with id: " + bookingId + " is not found.")
+                        : new UnathorizedBookingAccesException("You are not authorized to cancel this booking."));
+        boolean isOwner = booking.getUser().getId().equals(currentUser.getId());
         if(!isOwner && !isAdmin){
             throw new UnathorizedBookingAccesException("You are not authorized to cancel this booking.");
         }
-
+        if (booking.getStatus() == BookingStatus.CANCELLED){
+            throw new BookingAlreadyCancelledException("Booking with id: " + bookingId + " is already cancelled.");
+        }
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
     }
     //UPDATE RESERVATION BY ID
     @Override
     public BookingResponse updateBooking(Long bookingId, BookingUpdateRequest request){
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException("Booking with id: " + bookingId + " is not found."));
-        if(!request.getCheckOutDate().isAfter(request.getCheckInDate())){
-            throw new InvalidDateRangeException("Check-out date must be after check-in date.");
-        }
         User currentUser = getCurrentUser();
-        boolean isOwner = booking.getUser().getId().equals(currentUser.getId());
         boolean isAdmin = currentUser.getRole() == com.techtrek.booking.entity.Role.ADMIN;
-
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> isAdmin
+                        ? new BookingNotFoundException("Booking with id: " + bookingId + " is not found.")
+                        : new UnathorizedBookingAccesException("You are not authorized to update this booking."));
+        boolean isOwner = booking.getUser().getId().equals(currentUser.getId());
         if(!isOwner && !isAdmin){
             throw new UnathorizedBookingAccesException("You are not authorized to update this booking.");
+        }
+        if(!request.getCheckOutDate().isAfter(request.getCheckInDate())){
+            throw new InvalidDateRangeException("Check-out date must be after check-in date.");
         }
         List<Room> rooms = roomRepository.findByType(request.getRoomType());
         Room availableRoom = null;
@@ -123,30 +124,24 @@ public class BookingServiceImpl implements BookingService {
                     request.getCheckOutDate(),
                     BookingStatus.ACTIVE
             );
-
-            overlappingBookings.removeIf(b ->b.getId().equals(bookingId));
-            // we remove the cancelled bookings from the list
+            overlappingBookings.removeIf(b -> b.getId().equals(bookingId));
             overlappingBookings.removeIf(b -> b.getStatus() == BookingStatus.CANCELLED);
-
             if (overlappingBookings.isEmpty()){
                 availableRoom = room;
                 break;
             }
         }
-        if (availableRoom == null ) {
-            throw new BookingConflictException("No available rooms of type " + request.getRoomType()+ " for the selected dates.");
+        if (availableRoom == null) {
+            throw new BookingConflictException("No available rooms of type " + request.getRoomType() + " for the selected dates.");
         }
         booking.setRoom(availableRoom);
         booking.setCheckInDate(request.getCheckInDate());
         booking.setCheckOutDate(request.getCheckOutDate());
-
         long updatedDays = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
         BigDecimal updatedTotalPrice = availableRoom.getPricePerNight().multiply(BigDecimal.valueOf(updatedDays));
         booking.setTotalPrice(updatedTotalPrice);
-
         Booking saved = bookingRepository.save(booking);
         return mapToResponse(saved);
-
     }
 
     @Override
@@ -200,7 +195,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingResponse> getUpcomingBookings() {
-        List<Booking> bookings = bookingRepository.findByCheckInDateAfter(LocalDate.now());
+        List<Booking> bookings = bookingRepository.findByCheckInDateAfterAndStatus(LocalDate.now(), BookingStatus.ACTIVE);
         return bookings.stream()
                 .map(this::mapToResponse)
                 .toList();
