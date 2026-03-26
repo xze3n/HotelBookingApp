@@ -60,7 +60,7 @@ public class RoomController {
 
     // PUT endpoint /rooms/{id}
     @Operation(summary = "Update a room", description = "Updates an existing room.")
-    @ApiResponse(responseCode = "201", description = "Room successfully updated.")
+    @ApiResponse(responseCode = "200", description = "Room successfully updated.")
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "404", description = "Room not found.")
     @ApiResponse(responseCode = "409", description = "Room number already exists.")
