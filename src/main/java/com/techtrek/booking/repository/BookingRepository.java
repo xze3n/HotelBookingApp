@@ -1,8 +1,10 @@
 package com.techtrek.booking.repository;
 
 import com.techtrek.booking.entity.Booking;
+import com.techtrek.booking.entity.BookingStatus;
 import com.techtrek.booking.entity.Room;
 import com.techtrek.booking.entity.User;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,5 +25,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>{
     );
 
     // Method for Upcoming Bookings
+    List<Booking> findByCheckInDateAfterAndStatus(LocalDate date, BookingStatus status);
+
     List<Booking> findByCheckInDateAfter(LocalDate now);
+
 }
