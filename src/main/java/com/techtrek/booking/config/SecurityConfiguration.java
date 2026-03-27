@@ -38,6 +38,10 @@ public class SecurityConfiguration {
                                 "/webjars/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/rooms/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/rooms/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/rooms").hasRole( "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/rooms/{id}").hasRole("ADMIN")
+
 
                         .requestMatchers("/bookings/my").authenticated()
                         .requestMatchers("/bookings/upcoming").hasRole("ADMIN")
