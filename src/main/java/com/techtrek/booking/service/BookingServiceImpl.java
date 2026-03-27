@@ -33,10 +33,12 @@ public class BookingServiceImpl implements BookingService {
     @Override
     //CREATE BOOKING
     public BookingResponse createBooking(CreateBookingRequest request) {
+        if(request.getCheckInDate().isBefore(LocalDate.now())){
+            throw new InvalidDateRangeException("You cannot book a room for a past date.");
+        }
         if(!request.getCheckOutDate().isAfter(request.getCheckInDate())){
             throw new InvalidDateRangeException("Check-out date must be after check-in date");
         }
-
         List<Room> rooms = roomRepository.findByType(request.getRoomType());
 
         for (Room room : rooms) {
@@ -46,9 +48,6 @@ public class BookingServiceImpl implements BookingService {
                     request.getCheckOutDate(),
                     BookingStatus.ACTIVE
             );
-
-            overlappingBookings.removeIf(b -> b.getStatus() == BookingStatus.CANCELLED);
-
             if (overlappingBookings.isEmpty()) {
 
                 Booking booking = new Booking();
@@ -112,6 +111,12 @@ public class BookingServiceImpl implements BookingService {
         if(!isOwner && !isAdmin){
             throw new UnathorizedBookingAccesException("You are not authorized to update this booking.");
         }
+        if(booking.getStatus() == BookingStatus.CANCELLED){
+            throw new BookingAlreadyCancelledException("Cannot update a cancelled booking.");
+        }
+        if(request.getCheckInDate().isBefore(LocalDate.now())){
+            throw new InvalidDateRangeException("You cannot book a room for a past day.");
+        }
         if(!request.getCheckOutDate().isAfter(request.getCheckInDate())){
             throw new InvalidDateRangeException("Check-out date must be after check-in date.");
         }
@@ -125,7 +130,6 @@ public class BookingServiceImpl implements BookingService {
                     BookingStatus.ACTIVE
             );
             overlappingBookings.removeIf(b -> b.getId().equals(bookingId));
-            overlappingBookings.removeIf(b -> b.getStatus() == BookingStatus.CANCELLED);
             if (overlappingBookings.isEmpty()){
                 availableRoom = room;
                 break;
@@ -178,7 +182,7 @@ public class BookingServiceImpl implements BookingService {
             throw new UserNotFoundException("No authenticated user found.");
         }
         return userRepository.findByEmail(email)
-                .orElseThrow(()-> new UserNotFoundException("User not found,"));
+                .orElseThrow(()-> new UserNotFoundException("User not found."));
     }
 
     private BookingResponse mapToResponse(Booking booking){
